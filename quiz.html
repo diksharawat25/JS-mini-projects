@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-style: "Poppins", sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: rgb(24, 28, 73);
+        }
+
+        .container {
+            background: #fff;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            margin: 100px auto 0;
+            border-radius: 10px;
+        }
+
+        .container h1 {
+            font-weight: 600;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .quiz {
+            padding: 20px 0;
+        }
+
+        .quiz h2 {
+            font-size: 20px;
+            color: #001e4d;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #fff;
+            color: #222;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin: 18px 1px;
+            padding: 15px;
+            cursor: pointer;
+            border: 2px solid black;
+            border-radius: 7px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #222;
+            color: #fff;
+        }
+
+        .nxtbtn {
+            background-color: #001e4d;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border: 0;
+            border-radius: 5px;
+            width: 150px;
+            font-weight: 800;
+            font-size: large;
+            margin: 20px auto 0;
+            /* to make it in center---> used display as block */
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Simple Quiz</h1>
+        <hr />
+        <div class="quiz">
+            <h2 class="question">Question written here</h2>
+            <div id="ans-button">
+                <button class="btn">Answer 1</button>
+                <button class="btn">Answer 2</button>
+                <button class="btn">Answer 3</button>
+                <button class="btn">Answer 4</button>
+            </div>
+            <button class="nxtbtn">Next</button>
+        </div>
+    </div>
+</body>
+<script>
+    //Step 1: Quiz ke Questions ko Store Karna
+    // Hum pehle sare questions ko ek array ke form me likhte hain, jisme har question ke liye:
+    // question (text),
+    // options (choices)
+    // correct answer
+
+    const webquiz = [
+        {
+            question:
+                "Which of the following is a new element introduced in HTML5?",
+            options: ["<div>", "<section>", "<font>", "<center>"],
+            answer: "<section>",
+        },
+        {
+            question: "Which of the following is not a part of the CSS box model?",
+            options: ["Margin", "Border", "Padding", "Alignment"],
+            answer: "Alignment",
+        },
+        {
+            question: "Which is true about id and class in HTML?",
+            options: [
+                "id can be used multiple times on a page",
+                "class must be unique",
+                "id is unique, class can be reused",
+                "Both are used for styling only",
+            ],
+            answer: "id is unique, class can be reused",
+        },
+        {
+            question:
+                "Which CSS position value allows an element to stay fixed on the screen during scrolling?",
+            options: ["relative", "absolute", "fixed", "static"],
+            answer: "fixed",
+        },
+        {
+            question: "What does DOM stand for?",
+            options: [
+                "Document Object Method",
+                "Digital Object Model",
+                "Document Object Model",
+                "Data Object Method",
+            ],
+            answer: "Document Object Model",
+        },
+        {
+            question: "Which of the following is a semantic HTML tag?",
+            options: ["<div>", "<span>", "<article>", "<br>"],
+            answer: "<article>",
+        },
+        {
+            question: "In JavaScript, what is the difference between == and ===?",
+            options: [
+                "Both are identical",
+                "== compares value, === compares value and type",
+                "=== ignores type",
+                "== is used only for numbers",
+            ],
+            answer: "== compares value, === compares value and type",
+        },
+        {
+            question:
+                "Which of the following is NOT a way to make a responsive web page?",
+            options: [
+                "Using media queries",
+                "Using fixed widths",
+                "Using percentages",
+                "Using CSS Flexbox or Grid",
+            ],
+            answer: "Using fixed widths",
+        },
+        {
+            question:
+                "Which method is used to attach an event handler in JavaScript?",
+            options: [
+                "addElement()",
+                "attachListener()",
+                "addEventListener()",
+                "onEvent()",
+            ],
+            answer: "addEventListener()",
+        },
+        {
+            question: "What are media queries used for in CSS?",
+            options: [
+                "To play audio and video",
+                "To change styles based on screen size",
+                "To create popups",
+                "To animate text",
+            ],
+            answer: "To change styles based on screen size",
+        },
+    ];
+
+    let currentQuestionIndex = 0; //currentQuestionIndex: abhi kaunsa question dikh raha hai (index 0 se start hota hai).
+    let score = 0; //score: kitne sahi answers diye user ne.
+
+    const questionElement = document.querySelector(".question");
+    const answerButton = document.getElementById("ans-button");
+    const nextButton = document.querySelector(".nxtbtn");
+
+    // Jab quiz start hota hai:
+    // Index reset karo (0 se shuru).
+    // Score reset karo (0).
+    // Next button ko hide karo (display: none).
+    // Pehla question show karo using showQuestion().
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        nextButton.innerHTML = "Next";
+        nextButton.style.display = "none";
+        showQuestion();
+    }
+
+    function showQuestion() {
+        //resetState() se pehle ke options clear karte hain.
+        //currentQ = current question object.
+        //Question text ko screen pe daal dete hain.
+
+        resetState();
+        const currentQ = webquiz[currentQuestionIndex];
+        questionElement.innerText = `${currentQuestionIndex + 1}. ${currentQ.question}`;
+
+        //Har option ke liye button bana rahe hain.
+        //Jab user click kare, to selectAnswer() function chale.
+        currentQ.options.forEach((option) => {
+            //button create kraa
+            const button = document.createElement("button");
+
+            // Jo option loop me mila hai (e.g., "CSS"), usko button ke text ke roop me daal diya.
+            button.innerText = option;
+            //button me ek class add krii--btn 
+            button.classList.add("btn");
+            button.addEventListener("click", () =>
+                                                       
+                selectAnswer(button, currentQ.answer)   
+            );
+            answerButton.appendChild(button);
+        });
+    }
+    
+    //resetState() function ka main kaam hai purane question ke jawab aur "Next" button ko hata dena — taaki naye question ke liye jagah ban sake.
+    function resetState() {
+        //temporaily nextbtn ko hide krdena
+        nextButton.style.display = "none";
+
+        while (answerButton.firstChild) {
+            answerButton.removeChild(answerButton.firstChild);
+        }
+    }
+    
+    // This function is called when the user clicks on an answer button.
+    //selectAnswer(selectedBtn, correctAnswer) === selectAnswer(button, currentQ.answer) 
+    function selectAnswer(selectedBtn, correctAnswer) {
+
+        // Sabhi answer wale buttons ko ek list me le liya – taaki unko enable/disable ya color change kar sakein.
+        const allButtons = answerButton.querySelectorAll("button");
+        allButtons.forEach((btn) => {
+            btn.disabled = true;    //Sabhi buttons ko disable kar diya, taaki ek baar answer dene ke baad dubara koi click na kar sake.
+            if (btn.innerText === correctAnswer) {
+                btn.style.backgroundColor = "green";
+                btn.style.color = "white";
+            } else if (btn === selectedBtn) {
+                btn.style.backgroundColor = "red";
+                btn.style.color = "white";
+            }
+        });
+
+        if (selectedBtn.innerText === correctAnswer) {
+            score++;
+        }
+        nextButton.style.display = "block";
+    }
+
+    nextButton.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < webquiz.length) {
+            showQuestion();
+        } else {
+            showScore();
+        }
+    });
+
+    function showScore() {
+        resetState();
+        questionElement.innerText = `You scored ${score} out of ${webquiz.length}! 🎉`;
+        nextButton.innerText = "Play Again";
+        nextButton.style.display = "block";
+        nextButton.onclick = startQuiz;
+    }
+    startQuiz();
+</script>
+
+</html>

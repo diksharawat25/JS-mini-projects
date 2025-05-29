@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CALCULATOR</title>
+    <style>
+        body {
+            background-color: #e3f9ff;
+            width: 100%;
+            padding: 0px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #3a4452;
+            border-radius: 10px;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 10px 10px 10px 10px;
+
+        }
+
+        .display {
+            background-color: #3a4452;
+            height: 60px;
+            width: 400px;
+            font-size: 30px;
+            text-align: right;
+            padding: 20px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            margin: 10px;
+
+        }
+
+
+        .firstline,
+        .secondline,
+        .thirdline,
+        .fourthline,
+        .fifthline {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 1px;
+            /* gap between lines */
+        }
+
+        .line {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            border-radius: 203px;
+            color: white;
+            width: 100px;
+            height: 55px;
+            font-size: 35px;
+            box-shadow: 2px 2px 5px 5px rgba(194, 194, 239, 0.2);
+            cursor: pointer;
+        }
+        .box:hover{
+            border: 1px solid blueviolet;
+        }
+
+        #boxid {
+            width: 220px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div>
+            <input type="text" name="display" class="display">
+        </div>
+        <div class="firstline">
+            <div class="line">
+                <div class="box">AC</div>
+                <div class="box">DEL</div>
+                <div class="box">%</div>
+                <div class="box">/</div>
+            </div>
+        </div>
+        <div class="secondline">
+            <div class="line">
+                <div class="box">7</div>
+                <div class="box">8</div>
+                <div class="box">9</div>
+                <div class="box">*</div>
+            </div>
+        </div>
+        <div class="thirdline">
+            <div class="line">
+                <div class="box">4</div>
+                <div class="box">5</div>
+                <div class="box">6</div>
+                <div class="box">-</div>
+            </div>
+        </div>
+        <div class="fourthline">
+            <div class="line">
+                <div class="box">1</div>
+                <div class="box">2</div>
+                <div class="box">3</div>
+                <div class="box">+</div>
+            </div>
+        </div>
+        <div class="fifthline">
+            <div class="line">
+                <div class="box">00</div>
+                <div class="box">0</div>
+                <div class="box" id="boxid">=</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let button = document.querySelectorAll('.box');
+        let display = document.querySelector('.display');
+        let expression = ""; 
+
+        button.forEach(btn => {
+
+            btn.addEventListener('click', function () {
+                let value = btn.textContent; // Check which button was clicked
+
+                if (value === "AC") {
+                    expression = "";
+                    display.value = "";
+                }
+
+                else if (value === "DEL") {
+                    expression = expression.slice(0, -1);
+                    display.value = expression;
+                }
+
+                else if (value === "=") {
+                    try {
+                        expression = eval(expression); // calculation
+                        display.value = expression;
+                    } catch (error) {
+                        display.value = "Error";
+                        expression = "";
+                    }
+                }
+                else {
+                    expression += value;
+                    display.value = expression;
+                }
+            })
+        });
+    </script>
+
+
+</body>
+
+</html>
